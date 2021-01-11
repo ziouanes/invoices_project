@@ -113,7 +113,9 @@
                                             <td>{{ $invoice->Due_date }}</td>
                                             <td>{{ $invoice->product }}</td>
 
-                                            <td> <a href="{{ url('InvoicesDetails') }}/{{ $invoice->id }}">{{ $invoice->section->section_name }}
+                                            <td>
+                                                <a
+                                                    href="{{ url('InvoicesDetails') }}/{{ $invoice->id }}">{{ $invoice->section->section_name }}
                                                 </a>
 
                                             </td>
@@ -156,7 +158,7 @@
                                                         <a class="dropdown-item"
                                                             href="{{ URL::route('Status_show', [$invoice->id]) }}"><i
                                                                 class=" text-success fas
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        fa-money-bill"></i>&nbsp;&nbsp;تغير
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    fa-money-bill"></i>&nbsp;&nbsp;تغير
                                                             حالة
                                                             الدفع</a>
 

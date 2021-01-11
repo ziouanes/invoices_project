@@ -2,24 +2,26 @@
 
 namespace App\Notifications;
 
+use App\invoices;
+
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class AddInvoice extends Notification
+class Add_Invoices_mail extends Notification
 {
     use Queueable;
-    private $invoice_id;
+    
+    private $invoices;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($invoice_id)
+    public function __construct(invoices $invoices)
     {
-        $this->invoice_id = $invoice_id;
     }
 
     /**
@@ -30,7 +32,14 @@ class AddInvoice extends Notification
      */
     public function via($notifiable)
     {
-        return ['mail'];
+        return ['dataabse'];
+    }
+
+    public function toDatabase($notifiable)
+    {
+        return [
+           'data' => $this->details['body']
+        ];
     }
 
     /**
@@ -39,16 +48,13 @@ class AddInvoice extends Notification
      * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
-    public function toMail($notifiable)
-    {
-
-        $url = 'http://localhost:8001/invoices_project/invoices_project/public/InvoicesDetails/' . $this->invoice_id;
-        return (new MailMessage)
-            ->subject('إضافة فاتورة')
-            ->line('جديد ')
-            ->action('عرض الفاتورة', $url)
-            ->line('Thank you for using our application!');
-    }
+    // public function toMail($notifiable)
+    // {
+    //     return (new MailMessage)
+    //         ->line('The introduction to the notification.')
+    //         ->action('Notification Action', url('/'))
+    //         ->line('Thank you for using our application!');
+    // }
 
     /**
      * Get the array representation of the notification.

@@ -18,6 +18,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Events\MyEventClass;
 
 
+
 class InvoicesController extends Controller
 {
     /**
@@ -27,7 +28,14 @@ class InvoicesController extends Controller
      */
     public function index()
     {
-        $invoices = invoices::all();
+
+        $user_name  = Auth::user()->name;
+        $invoices = invoices::where('Created_by', Auth::user()->id)->get();
+
+
+
+        // $invoices = invoices::all();
+        // Auth()->user()->id;
         return view('invoices.invoices', compact('invoices'));
     }
 
@@ -71,6 +79,7 @@ class InvoicesController extends Controller
             'Status' => 'غير مدفوعة',
             'Value_Status' => 2,
             'note' => $request->note,
+            'Created_by' => (Auth::user()->id),
         ]);
         $invoice_id = invoices::latest()->first()->id;
         invoices_details::create([
@@ -90,7 +99,6 @@ class InvoicesController extends Controller
             $image = $request->file('pic');
             $file_name = $image->getClientOriginalName();
             $invoice_number = $request->invoice_number;
-
             $attachments = new invoice_attachments();
             $attachments->file_name = $file_name;
             $attachments->invoice_number = $invoice_number;
@@ -108,6 +116,18 @@ class InvoicesController extends Controller
         // Notification::send($user, new AddInvoice($invoice_id));
 
 
+        ////// message
+
+        $user = User::get();
+
+        $invoice_id = Invoices::latest()->first();
+
+
+
+        //$user->notify(new \App\Notifications\Add_Invoices($$invoice_id));
+        Notification::send($user, new \App\Notifications\Add_Invoices($invoice_id));
+
+        // return dd("Done"); 
 
         session()->flash('Add', 'تم اضافة الفاتورة بنجاح');
         return back();
@@ -134,6 +154,8 @@ class InvoicesController extends Controller
      */
     public function edit($id)
     {
+        $user_name  = Auth::user()->name;
+
         $invoices = invoices::where('id', $id)->first();
         $sections = sections::all();
         return view('invoices.edit_invoice', compact('sections', 'invoices'));
@@ -168,6 +190,7 @@ class InvoicesController extends Controller
             'Rate_VAT' => $request->Rate_VAT,
             'Total' => $request->Total,
             'note' => $request->note,
+            'Created_by' => (Auth::user()->id),
         ]);
 
         session()->flash('edit', 'تم تعديل الفاتورة بنجاح');
@@ -273,5 +296,10 @@ class InvoicesController extends Controller
     {
         $products = DB::table("products")->where("section_id", $id)->pluck("Product_name", "id");
         return json_encode($products);
+    }
+
+    public function export()
+    {
+        return Excel::download(new InvoicesExport, 'Invoice.xlsx');
     }
 }

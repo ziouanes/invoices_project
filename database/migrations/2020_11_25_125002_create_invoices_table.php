@@ -31,6 +31,7 @@ class CreateInvoicesTable extends Migration
             $table->integer('Value_Status');
             $table->text('note')->nullable();
             $table->date('Payment_Date')->nullable();
+            $table->string('Created_by', 999);
             $table->softDeletes();
             $table->timestamps();
         });
